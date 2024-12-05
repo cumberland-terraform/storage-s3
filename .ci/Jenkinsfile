@@ -1,0 +1,135 @@
+pipeline {
+	agent { 
+		label 						'cc-runner' 
+	}
+	
+	environment { 
+		MODULE_NAME 				= 's3'
+		OS_ARCH 					= 'amd64' 
+		TF_LOG 						= 'WARN'
+		TF_VER 						= '1.8.5'
+	}
+
+	stages {
+		stage ('Base Dependencies') {
+			steps{
+				sh 					'''
+									wget \
+										-q https://releases.hashicorp.com/terraform/${TF_VER}/terraform_${TF_VER}_linux_${OS_ARCH}.zip
+									unzip \
+										-o terraform_${TF_VER}_linux_${OS_ARCH}.zip
+									sudo cp \
+										-rf terraform /usr/local/bin/
+									'''
+			}
+		}
+
+		stage ('Feature Branch Dependencies') {
+			when { expression { env.GIT_BRANCH =~ "origin/*PR*" } }
+			steps {
+				sh 					'''
+									curl \
+										-s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+									curl \
+										-s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+									'''
+			}
+		}
+
+		stage ('Master Branch Dependencies') {
+			when { expression {env.GIT_BRANCH =~ "origin/master/*" } }
+			steps {
+				sh 					'''
+									curl \
+										-Lo ./terraform-docs.tar.gz\
+										 https://github.com/terraform-docs/terraform-docs/releases/download/${TF_DOCS_VER}/terraform-docs-${TF_DOCS_VER}-$(uname)-amd64.tar.gz
+									tar \
+										-xzf terraform-docs.tar.gz
+									chmod \
+										+x terraform-docs
+									sudo mv \
+										terraform-docs \
+										/usr/local/bin/terraform-docs
+									'''
+			}
+		}
+
+		stage ('Lint') {
+			when { expression { env.GIT_BRANCH =~ "origin/*PR*"} }
+			steps {
+				sh 					'''
+									tflint \
+										-f json \
+										--config .ci/.tflint.hcl \
+										> lint.json
+									'''
+			}
+			post {
+				always {
+					sh 				'cat lint.json'
+				}
+			}
+		}
+
+		stage ('Sec Scanning') {
+			when { expression { env.GIT_BRANCH =~ "origin/*PR*" } }
+		    steps {
+				sh 					'''
+									tfsec . \
+										--format json \
+										--no-colour \
+										> sec.json
+									'''
+			post {
+				always {
+					sh 				'cat sec.json'
+					}
+				}
+			}
+		}	
+
+		stage ('Test') {
+			when { expression { env.GIT_BRANCH =~ "origin/*PR*"} }
+			steps {
+				sh 					'''
+									terraform init \
+										-no-color
+									terraform test \
+										-test-directory ./.ci/tests \
+										-json \
+										> test.json
+									'''
+			post {
+				always {
+					sh 				'''
+									cat test.json
+									'''
+					}
+				}
+			}
+		}
+		
+		stage ('Document') {
+			when { expression { env.GIT_BRANCH =~ "origin/master/*" } }
+			steps {
+				sh 					'''
+									terraform-docs \
+										-c .ci/.tfdocs.yml .
+									'''
+			}
+		}
+	}
+
+	post {
+        failure {
+            emailext body: 			'$BUILD_URL to view the results.',
+            	to:  	 			EMAIL_LIST,
+            	subject: 			'Build failed in Jenkins: $PROJECT_NAME - #$BUILD_NUMBER'
+        }
+        success {
+            emailext body: 			'$BUILD_URL to view the results.',
+            	to:  			 	EMAIL_LIST,
+            	subject: 			'Build succeeded in Jenkins: $PROJECT_NAME - #$BUILD_NUMBER'
+        }
+    }
+}
