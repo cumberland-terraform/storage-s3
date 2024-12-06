@@ -3,10 +3,13 @@ data "aws_iam_policy_document" "policy" {
                               
 
     source_policy_documents = concat(
-                              [ var.s3.policy ], 
+                              var.s3.policy != null ? [ 
+                                var.s3.policy 
+                              ] : [], 
                               local.conditions.is_website ? [
                                 data.aws_iam_policy_document.web_policy.json
-                            ] : [])
+                              ] : []
+                            )
 }
 
 data "aws_iam_policy_document" "web_policy" {
