@@ -45,6 +45,7 @@ locals {
                                         module.platform.prefix,
                                         var.s3.suffix
                                     ]))
+                                    
     # KMS Key outcomes:
     #   1. Module provisions its own KMS key.
     #   2. Module uses KMS key that was passed in.

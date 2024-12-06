@@ -5,8 +5,8 @@ module "platform" {
   hydration             = {
     vpc_query           = false
     subnets_query       = false
-    dmem_sg_query       = false
-    rhel_sg_query       = false
+    public_sg_query     = false
+    private_sg_query    = false
     eks_ami_query       = false
   }
 }
