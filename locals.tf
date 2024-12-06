@@ -14,10 +14,10 @@ locals {
             storage_class           = "STANDARD"
         }
         public_access_block         = {
-            block_public_acls       = true
-            block_public_policy     = true
-            ignore_public_acls      = true
-            restrict_public_buckets = true
+            block_public_acls       = var.s3.website_configuration.enabled ? false : true
+            block_public_policy     = var.s3.website_configuration.enabled ? false : true
+            ignore_public_acls      = var.s3.website_configuration.enabled ? false : true
+            restrict_public_buckets = var.s3.website_configuration.enabled ? false : true
         }
     }
     
