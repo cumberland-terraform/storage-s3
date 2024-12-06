@@ -90,4 +90,19 @@ locals {
     event_notification_id           = "${local.bucket_name}-notifications"
     
     event_notification_arn          = "arn:aws:sns:*:*:${local.event_notification_id}"
+
+    public_access_block             = {
+        block_public_acls           = var.s3.website_configuration.enabled ? false : (
+                                        var.s3.public_access_block.block_public_acls
+                                    )
+        block_public_policy         = var.s3.website_configuration.enabled ? false : (
+                                        var.s3.public_access_block.block_public_policy
+                                    )
+        ignore_public_acls          = var.s3.website_configuration.enabled ? false : (
+                                        var.s3.public_access_block.ignore_public_acls
+                                    )
+        restrict_public_buckets     = var.s3.website_configuration.enabled ? false : (
+                                        var.s3.public_access_block.restrict_public_buckets
+                                    )
+    }
 }

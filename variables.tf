@@ -25,7 +25,17 @@ variable "s3" {
         suffix                                  = optional(string, "01")
         acl                                     = optional(string, "private")
 
-        public_access_block                     = optional(bool, true)
+        public_access_block                     = optional(object({
+            block_public_acls                   = optional(bool, true)
+            block_public_policy                 = optional(bool, true)
+            ignore_public_acls                  = optional(bool, true)
+            restrict_public_buckets             = optional(bool, true)
+        }), {
+            block_public_acls                   = true
+            block_public_policy                 = true
+            ignore_public_acls                  = true
+            restrict_public_buckets             = true
+        })
 
         logging                                 = optional(bool, false)
         notification                            = optional(bool, false)
