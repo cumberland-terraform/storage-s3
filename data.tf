@@ -26,6 +26,12 @@ data "aws_iam_policy_document" "web_policy" {
       type                  = "*"
       identifiers           = [ "*" ]
     }
+
+    condition {
+      test                  = "Bool"
+      variable              = "aws:SecureTransport"
+      values                = [ true ]
+    }
   }
 }
 
