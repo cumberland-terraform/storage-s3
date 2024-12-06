@@ -2,7 +2,28 @@ data "aws_iam_policy_document" "policy" {
     count                   = local.conditions.attach_policy ? local.total_buckets : 0
                               
 
-    source_policy_documents = [ var.s3.policy]
+    source_policy_documents = concat(
+                              [ var.s3.policy ], 
+                              local.conditions.is_website ? [
+                                data.aws_iam_policy_document.web_policy.json
+                            ] : [])
+}
+
+data "aws_iam_policy_document" "web_policy" {
+  
+  statement {
+    effect                  = "Allow"
+    actions                 = [ "s3:GetObject"]
+    resources               = [ 
+                              aws_s3_bucket.this[0].arn,
+                              "${aws_s3_bucket.this[0].arn}/*"
+                            ] 
+
+    principals {
+      type                  = "*"
+      identifiers           = [ "*" ]
+    }
+  }
 }
 
 data "aws_iam_policy_document" "replication" {
