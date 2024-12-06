@@ -26,7 +26,7 @@ locals {
     #       to different deployment configurations.
     conditions                      = {
         attach_policy               = var.s3.policy != null || var.s3.website_configuration.enabled
-        provision_key               = var.s3.kms_key == null
+        provision_key               = var.kms == null
         replicate                   = var.s3.replicas > 0
         notify                      = var.s3.notification
         is_website                  = var.s3.website_configuration.enabled
@@ -58,17 +58,17 @@ locals {
 
     kms_key_arn                     = local.conditions.provision_key ? (
                                         module.kms[0].key.arn
-                                    ) : !var.s3.kms_key.aws_managed ? ( 
-                                        var.s3.kms_key.arn
+                                    ) : !var.kms.aws_managed ? ( 
+                                        var.kms.arn
                                     ): null
                                     
     kms_key_alias_arn               = local.conditions.provision_key ? (
                                         module.kms[0].key.alias_arn
-                                    ) : var.s3.kms_key.aws_managed ? (
+                                    ) : var.kms.aws_managed ? (
                                         local.managed_kms_key_alias_arn
-                                    ): var.s3.kms_key.alias_arn
+                                    ): var.kms.alias_arn
 
-    sse_algorithm                   = local.conditions.provision_key || !var.s3.kms_key.aws_managed ? (
+    sse_algorithm                   = local.conditions.provision_key || !var.kms.aws_managed ? (
                                         "aws:kms" ) : ( "AES256" )
 
     # Replication Configuration
