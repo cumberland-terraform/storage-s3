@@ -20,7 +20,10 @@ data "aws_iam_policy_document" "notify_policy"{
   statement {
     effect                  = "Allow"
     actions                 = [ "s3:PutObject"]
-
+    resources               = [ 
+                              aws_s3_bucket.this[0].arn,
+                              "${aws_s3_bucket.this[0].arn}/*"
+                            ] 
     condition {
       test                  = "StringEquals"
       variable              = "aws:Referrer"
