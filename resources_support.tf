@@ -20,6 +20,14 @@ resource "aws_sns_topic" "this" {
   policy                                = data.aws_iam_policy_document.notification[count.index].json
 }
 
+resource "aws_sns_topic_subscription" "this" {
+  count                               = local.conditions.notify && length(var.s3.notification_emails) > 0 ? length(var.s3.notification_emails) : 0
+  
+  topic_arn                           = aws_sns_topic.this[0].arn
+  protocol                            = "email"
+  endpoint                            = var.s3.notification_emails[count.index]
+}
+
 resource "aws_s3_bucket_notification" "this" {
     count                               = var.s3.notification ? 1 : 0
     bucket                              = aws_s3_bucket.this[0].id

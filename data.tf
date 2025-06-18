@@ -105,4 +105,20 @@ data "aws_iam_policy_document" "notification" {
       identifiers           = [ "*" ]
     }
   }
+
+  statement {
+    effect                  = "Allow"
+    actions                 = [ "s3:PutObject"]
+
+    condition {
+      test                  = "StringEquals"
+      variable              = "aws:Referrer"
+      values                = [ module.platform.aws.account_id ]
+    }
+    principals {
+      type                  = "Service"
+      identifiers           = [ "ses.amazonaws.com" ]
+    }
+
+  }
 }
