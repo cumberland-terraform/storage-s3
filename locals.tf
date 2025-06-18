@@ -19,7 +19,7 @@ locals {
     #   Configuration object containing boolean calculations that correspond
     #       to different deployment configurations.
     conditions                      = {
-        attach_policy               = var.s3.policy != null || var.s3.website_configuration.enabled
+        attach_policy               = var.s3.policy != null || var.s3.website_configuration.enabled || var.s3.notification
         provision_key               = var.kms == null
         replicate                   = var.s3.replicas > 0
         notify                      = var.s3.notification
