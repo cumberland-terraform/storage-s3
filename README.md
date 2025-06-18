@@ -1,8 +1,8 @@
 # Enterprise Terraform 
-## AWS Core Storage
-### S3
+## Cumberland Cloud Platform
+## AWS Core - S3
 
-This is the baseline module for a **S3** bucket on the **MDThink Platform**. It has been setup with ease of deployment in mind, so that platform compliant simple storage space be easily provisioned with minimum configuration.
+This is the baseline module for a **S3** bucket on the **Cumberland Cloud Platform**. It has been setup with ease of deployment in mind, so that platform compliant simple storage space be easily provisioned with minimum configuration.
 
 ### Usage
 
@@ -24,7 +24,7 @@ provider "aws" {
 
 ```
 module "s3" {
-	source          		= "ssh://git@source.mdthink.maryland.gov:22/etm/mdt-eter-aws-core-storage-s3.git"
+	source          		= "ssh://git@github.com:cumberland-terraform/storage-s3.git"
 	
 	platform 				= {
 		aws_region      	= "<aws-region>"
@@ -41,7 +41,8 @@ module "s3" {
 
 }
 ```
-`platform` is a parameter for *all* **MDThink Enterprise Terraform** modules. For more information about the `platform`, in particular the permitted values of the nested fields, see the [mdt-eter-platform documentation](https://source.mdthink.maryland.gov/projects/etm/repos/mdt-eter-platform/browse). The following section goes into more detail regarding the `ec2` variable.
+
+`platform` is a parameter for *all* **cumberland-cloud** modules. See the platform module documentation for more information.,
 
 ### Parameters
 
@@ -167,17 +168,12 @@ git tag v1.0.1
 git push tag v1.0.1
 ```
 
-Update the `CHANGELOG.md` with information about changes.
-
 ### Pull Request Checklist
 
 Ensure each item on the following checklist is complete before updating any tenant deployments with a new version of this module,
 
 - [] Merge `master` into `feature/*` branch
 - [] Open PR from `feature/*` branch into `master` branch
-- [] Ensure tests are passing in Jenkins
-- [] Get approval from lead
+- [] Get approval from owner
 - [] Merge into `master`
 - [] Increment `git tag` version
-- [] Update Changelog
-- [] Publish latest version on Confluence
