@@ -9,7 +9,7 @@ data "aws_iam_policy_document" "policy" {
                               local.conditions.is_website ? [
                                 data.aws_iam_policy_document.web_policy.json
                               ] : [],
-                              locat.conditions.notify? [ 
+                              local.conditions.notify? [ 
                                 data.aws_iam_policy_document.notify_policy.json
                               ] : [],
                             )
