@@ -89,7 +89,7 @@ locals {
         block_public_acls           = var.s3.website_configuration.enabled ? false : (
                                         var.s3.public_access_block.block_public_acls
                                     )
-        block_public_policy         = var.s3.website_configuration.enabled ? false : (
+        block_public_policy         = var.s3.website_configuration.enabled || local.conditions.notify ? false : (
                                         var.s3.public_access_block.block_public_policy
                                     )
         ignore_public_acls          = var.s3.website_configuration.enabled ? false : (
