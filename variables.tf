@@ -43,7 +43,7 @@ variable "s3" {
                                                     "s3:ObjectCreated:*",
                                                     "s3:ObjectRemoved:*"
                                                 ])
-        notification_emails = optional(list(string), [])
+        notification_emails                     = optional(list(string), [])
 
         policy                                  = optional(string, null)
 

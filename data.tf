@@ -8,8 +8,29 @@ data "aws_iam_policy_document" "policy" {
                               ] : [], 
                               local.conditions.is_website ? [
                                 data.aws_iam_policy_document.web_policy.json
-                              ] : []
+                              ] : [],
+                              locat.conditions.notify? [ 
+                                data.aws_iam_policy_document.notify_policy.json
+                              ] : [],
                             )
+}
+
+data "aws_iam_policy_document" "notify_policy"{
+
+  statement {
+    effect                  = "Allow"
+    actions                 = [ "s3:PutObject"]
+
+    condition {
+      test                  = "StringEquals"
+      variable              = "aws:Referrer"
+      values                = [ module.platform.aws.account_id ]
+    }
+    principals {
+      type                  = "Service"
+      identifiers           = [ "ses.amazonaws.com" ]
+    }
+  }
 }
 
 data "aws_iam_policy_document" "web_policy" {
@@ -104,21 +125,5 @@ data "aws_iam_policy_document" "notification" {
       type                  = "*"
       identifiers           = [ "*" ]
     }
-  }
-
-  statement {
-    effect                  = "Allow"
-    actions                 = [ "s3:PutObject"]
-
-    condition {
-      test                  = "StringEquals"
-      variable              = "aws:Referrer"
-      values                = [ module.platform.aws.account_id ]
-    }
-    principals {
-      type                  = "Service"
-      identifiers           = [ "ses.amazonaws.com" ]
-    }
-
   }
 }
