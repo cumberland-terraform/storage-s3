@@ -25,10 +25,19 @@ data "aws_iam_policy_document" "notify_policy"{
                               "${aws_s3_bucket.this[0].arn}/*"
                             ] 
     condition {
+      test                  = "ArnLike"
+      variable              = "aws:SourceArn"
+      values                = [ 
+        "arn:aws:ses:${module.platform.aws.region}:${module.platform.aws.account_id}:receipt-rule-set/*" 
+      ]
+    }
+
+    condition {
       test                  = "StringEquals"
-      variable              = "aws:Referrer"
+      variable              = "aws:SourceAccount"
       values                = [ module.platform.aws.account_id ]
     }
+
     principals {
       type                  = "Service"
       identifiers           = [ "ses.amazonaws.com" ]
