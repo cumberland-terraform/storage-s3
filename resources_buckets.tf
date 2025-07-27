@@ -13,6 +13,12 @@ resource "aws_s3_bucket" "this" {
 }
 
 resource "aws_s3_bucket_policy" "this" {
+    lifecycle {
+        # Ignore changes made in console
+        # TODO: need to upate AWS conditions in bucket policy for email bucket
+        ignore_changes          = [ policy ]
+    }
+
     count                       = local.conditions.attach_policy ? local.total_buckets : 0
 
     bucket                      = aws_s3_bucket.this[count.index].id
