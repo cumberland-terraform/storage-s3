@@ -32,7 +32,6 @@ module "s3" {
     	acct_env        	= "<account-env>"
     	agency          	= "<agency>"
     	program         	= "<program>"
-    	pca             	= "<pca>"
 	}
 
 	s3						= {

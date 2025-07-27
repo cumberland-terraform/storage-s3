@@ -6,6 +6,7 @@ variable "platform" {
   })
 }
 
+
 variable "kms" {
   description                   = "KMS Key configuration object. If not provided, a key will be provisioned. An AWS managed key can be used by specifying `aws_managed = true`."
   type                          = object({
