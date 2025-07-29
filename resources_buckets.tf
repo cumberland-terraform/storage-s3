@@ -13,21 +13,21 @@ resource "aws_s3_bucket" "this" {
 }
 
 resource "aws_s3_bucket_policy" "this" {
+    count                       = local.conditions.attach_policy ? local.total_buckets : 0
+    depends_on                  = [ aws_s3_bucket_public_access_block.this ]
+    
     lifecycle {
         # Ignore changes made in console
-        # TODO: need to upate AWS conditions in bucket policy for email bucket
         ignore_changes          = [ policy ]
     }
-
-    count                       = local.conditions.attach_policy ? local.total_buckets : 0
-
+    
     bucket                      = aws_s3_bucket.this[count.index].id
     policy                      = data.aws_iam_policy_document.policy[count.index].json
 }
 
 resource "aws_s3_bucket_public_access_block" "this" {
     count                       = local.total_buckets
-
+    
     bucket                      = aws_s3_bucket.this[count.index].id
     block_public_acls           = local.public_access_block.block_public_acls
     block_public_policy         = local.public_access_block.block_public_policy
